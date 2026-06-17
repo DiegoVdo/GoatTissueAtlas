@@ -1,0 +1,54 @@
+#!/bin/bash
+
+###############################################################################
+# Transcriptome assembly and comparison
+# StringTie v2.2.1
+# gffcompare v0.12.6
+###############################################################################
+
+THREADS=4
+
+REFERENCE_GTF="reference/genomic.gtf"
+
+MAPPING_DIR="Mapping"
+
+STRINGTIE_DIR="Stringtie"
+
+mkdir -p ${STRINGTIE_DIR}
+
+###############################################################################
+# Assemble transcripts for each sample
+###############################################################################
+
+while read SAMPLE
+do
+
+    stringtie \
+        ${MAPPING_DIR}/${SAMPLE}.Aligned.sortedByCoord.out.bam \
+        -o ${STRINGTIE_DIR}/${SAMPLE}.gtf \
+        -p ${THREADS} \
+        -G ${REFERENCE_GTF} \
+        --fr
+
+done < Sample_list.txt
+
+###############################################################################
+# Merge assemblies
+###############################################################################
+
+ls ${STRINGTIE_DIR}/*.gtf > ${STRINGTIE_DIR}/gtf_list.txt
+
+stringtie \
+    --merge \
+    -G ${REFERENCE_GTF} \
+    -o ${STRINGTIE_DIR}/merged.gtf \
+    ${STRINGTIE_DIR}/gtf_list.txt
+
+###############################################################################
+# Compare assembled transcripts with annotation
+###############################################################################
+
+gffcompare \
+    -r ${REFERENCE_GTF} \
+    -V \
+    ${STRINGTIE_DIR}/merged.gtf

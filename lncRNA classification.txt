@@ -1,0 +1,131 @@
+#!/bin/bash
+
+###############################################################################
+# Final lncRNA classification and naming
+###############################################################################
+
+REFERENCE_GTF="reference/genomic.gtf"
+
+
+###############################################################################
+# Extract final lncRNA transcripts
+###############################################################################
+
+awk -F "\t" '
+
+FNR==NR{
+keep[$1]
+next
+}
+
+{
+tx=$9
+gsub(/^transcript_id "/,"",tx)
+gsub(/".+/,"",tx)
+
+if(tx in keep)
+print
+
+}
+
+' \
+lncRNA_final_list.txt \
+lncRNA_candidate.gtf \
+> lncRNA_final_candidate.gtf
+
+
+
+###############################################################################
+# Obtain reference transcript strand information
+###############################################################################
+
+awk -F "\t" '
+BEGIN{OFS="\t"}
+
+$3=="transcript"
+{
+
+gsub(/.*transcript_id "/,"",$9)
+gsub(/";.+/,"",$9)
+
+print $9,$7
+
+}
+
+' \
+${REFERENCE_GTF} \
+> transcript_strand_information.txt
+
+
+
+###############################################################################
+# Correct intronic classifications
+###############################################################################
+
+awk -F "\t" '
+BEGIN{OFS="\t"}
+
+FNR==NR{
+strand[$1]=$2
+next
+}
+
+
+$9 !~ /class_code "i"/
+{
+print
+}
+
+
+$9 ~ /class_code "i"/
+{
+
+gene=$9
+
+gsub(/.*cmp_ref "/,"",gene)
+gsub(/";.+/,"",gene)
+
+
+if(strand[gene]==$7)
+{
+print
+}
+
+else
+{
+gsub(/"i"/,""x"",$0)
+print
+}
+
+}
+
+' \
+transcript_strand_information.txt \
+lncRNA_final_candidate.gtf \
+> lncRNA_final_candidate_corrected.gtf
+
+
+
+###############################################################################
+# Assign lncRNA names
+#
+# External script from classification pipeline
+# Script for the classification and naming of lncRNAs following HUGO Gene Nomenclature Committee (HGNC) recommendations (Seal et al., 2020)."
+# Script created by Endika Varela-Martínez (endikavarela@hotmail.com)
+
+###############################################################################
+
+classification.sh \
+--gtf1 lncRNA_final_candidate_corrected.gtf \
+--gtf2 ${REFERENCE_GTF} \
+-d 5000
+
+
+###############################################################################
+# Output:
+#
+# lncRNAs.gtf
+# lncRNAs_gene.txt
+# lncRNAs_transcript.txt
+# lncRNAs_IDconversion.txt
+###############################################################################
