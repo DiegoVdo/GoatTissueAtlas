@@ -19,15 +19,15 @@ Capra hircus ARS1.2
 
 ## Software versions
 
-FastQC v0.12
+FastQC v0.11.9
 
-MultiQC v1.19
+MultiQC v1.12
 
 BBDuk v38.96
 
 STAR v2.7.11b
 
-SAMtools v1.8
+SAMtools v1.22.1
 
 StringTie v2.2.1
 
