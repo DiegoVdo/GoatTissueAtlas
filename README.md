@@ -5,14 +5,13 @@ This repository contains the bioinformatic workflow used for the identification,
 1. Raw read quality assessment using FastQC and MultiQC.
 2. Removal of rRNA contamination using BBDuk and SILVA database release 138.2.
 3. Genome alignment against the Capra hircus ARS1.2 reference genome using STAR.
-4. Transcriptome assembly using StringTie.
-5. Comparison with reference annotation using gffcompare.
-6. Selection of putative lncRNA candidates based on transcript class and length.
-7. Coding potential evaluation using CPC2, CPAT and LGC.
-8. Protein domain filtering using HMMER and Pfam.
-9. Classification and naming of novel lncRNAs.
-10. Expression quantification using Kallisto.
-11. Generation of gene-level count matrices using tximport.
+4. Transcriptome assembly using StringTie and comparison with reference annotation using gffcompare.
+5. Selection of putative lncRNA candidates based on transcript class and length.
+6. Coding potential evaluation using CPC2, CPAT and LGC.
+7. Protein domain filtering using HMMER and Pfam.
+8. Classification and naming of novel lncRNAs.
+9. Expression quantification using Kallisto.
+10. Generation of gene-level count matrices using tximport.
 
 ## Reference genome
 
